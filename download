@@ -1,0 +1,39 @@
+#code for downloaded file
+from google.colab import files
+
+# Prompt to upload files from your local computer
+uploaded = files.upload()
+
+# Confirm that the file has been uploaded
+for fn in uploaded.keys():
+  print(f'User uploaded file "{fn}" with length {len(uploaded[fn])} bytes')
+
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler
+
+# Load Dataset
+df = pd.read_csv("Titanic-Dataset.csv")
+
+print("Original Dataset")
+print(df.head())
+
+# Check Missing Values
+print("\nMissing Values")
+print(df.isnull().sum())
+
+# Handle Missing Values (Updated to avoid FutureWarnings)
+df['Age'] = df['Age'].fillna(df['Age'].mean())
+df['Embarked'] = df['Embarked'].fillna(df['Embarked'].mode()[0])
+
+# Encode Categorical Variables
+encoder = LabelEncoder()
+df['Sex'] = encoder.fit_transform(df['Sex'])
+df['Embarked'] = encoder.fit_transform(df['Embarked'])
+
+# Scale Numerical Attributes
+scaler = StandardScaler()
+df[['Age', 'Fare']] = scaler.fit_transform(df[['Age', 'Fare']])
+
+print("\nPreprocessed Dataset")
+print(df[['Age', 'Fare', 'Sex', 'Embarked']].head())
